@@ -5,12 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface StockWarningProps {
-  lowStockItems: Array<{
+  lowStockItems: {
     name: string;
     quantity: number;
     unit: string;
     minAlertThreshold: number;
-  }>;
+  }[];
   onPress?: () => void;
 }
 

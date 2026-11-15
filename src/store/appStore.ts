@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AppState, TrainingDay, Workout, Meal, ShoppingItem, StockItem, WeightRecord, Exercise, Ingredient } from '../types';
+import { AppState, TrainingDay, Workout, Meal, WeightRecord, Exercise, Ingredient } from '../types';
 import { INITIAL_WORKOUTS, MENU_TEMPLATES, INITIAL_SHOPPING_LIST, INITIAL_STOCK, WEEKLY_BUDGET_LIMIT } from '../constants/mockData';
 
 // Helper to format key for workouts (week_day)
@@ -162,7 +162,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     
     // Re-calculate targets with potential stall bonus
     const { currentWeek } = get();
-    const { calories, protein } = getBaseTargets(currentWeek);
+    const { calories } = getBaseTargets(currentWeek);
     const bonus = calculateWeightStallCalorieBonus(updatedHistory);
     
     set({
@@ -283,13 +283,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (ing.stockUnit && ing.stockDeductionAmount) {
         const item = updatedStock[ing.stockUnit];
         if (item) {
-          if (completed) {
-            // Deduct stock
-            item.quantity = Math.max(0, item.quantity - ing.stockDeductionAmount);
-          } else {
-            // Uncheck meal: Return stock
-            item.quantity = item.quantity + ing.stockDeductionAmount;
-          }
+          // Copy the item instead of mutating it, so previous state stays intact
+          const quantity = completed
+            ? Math.max(0, item.quantity - ing.stockDeductionAmount) // Deduct stock
+            : item.quantity + ing.stockDeductionAmount; // Uncheck meal: return stock
+          updatedStock[ing.stockUnit] = { ...item, quantity };
         }
       }
     });
@@ -336,11 +334,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         if (item.stockItemName) {
           const stockItem = updatedStock[item.stockItemName];
           if (stockItem) {
-            if (nextPurchased) {
-              stockItem.quantity = stockItem.quantity + item.stockAmountToAdd;
-            } else {
-              stockItem.quantity = Math.max(0, stockItem.quantity - item.stockAmountToAdd);
-            }
+            const quantity = nextPurchased
+              ? stockItem.quantity + item.stockAmountToAdd
+              : Math.max(0, stockItem.quantity - item.stockAmountToAdd);
+            updatedStock[item.stockItemName] = { ...stockItem, quantity };
           }
         }
         
@@ -391,11 +388,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   updateStockQuantity: (name: string, quantity: number) => {
     if (quantity < 0) return;
     const { stock } = get();
-    const updatedStock = { ...stock };
-    
-    if (updatedStock[name]) {
-      updatedStock[name].quantity = quantity;
-      set({ stock: updatedStock });
+    if (stock[name]) {
+      set({ stock: { ...stock, [name]: { ...stock[name], quantity } } });
     }
   },
   

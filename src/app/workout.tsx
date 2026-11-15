@@ -1,12 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, ScrollView, Pressable, Platform, Vibration } from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { StyleSheet, Text, View, ScrollView, Pressable, Platform, Vibration, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '../store/appStore';
 import { TrainingDay, Exercise } from '../types';
 import { Spacing } from '../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
 import { useLanguage } from '../i18n/LanguageContext';
+import { formatSeconds } from '../utils/time';
+
+const WEEK_DAYS = [
+  TrainingDay.PAZAR,
+  TrainingDay.PAZARTESI,
+  TrainingDay.SALI,
+  TrainingDay.CARSAMBA,
+  TrainingDay.PERSEMBE,
+  TrainingDay.CUMA,
+  TrainingDay.CUMARTESI,
+];
 
 export default function WorkoutScreen() {
   const { t, tc } = useLanguage();
@@ -16,66 +26,21 @@ export default function WorkoutScreen() {
 
   const {
     currentWeek,
-    isDeloadWeek,
     workouts,
-    activeDay,
     toggleExercise,
   } = useAppStore();
 
-  // Set local state for active workout day selection
-  const [selectedDay, setSelectedDay] = useState<TrainingDay>(activeDay);
+  // Local state for the selected workout day, starting on today's day of the week
+  const [selectedDay, setSelectedDay] = useState<TrainingDay>(() => WEEK_DAYS[new Date().getDay()]);
 
   // Active Timer state
   const [timerSeconds, setTimerSeconds] = useState<number>(0);
   const [timerMax, setTimerMax] = useState<number>(0);
   const [timerActive, setTimerActive] = useState<boolean>(false);
-  const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
-  
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-expand current day on load
-  useEffect(() => {
-    // Determine today's day of week
-    const dayIndex = new Date().getDay();
-    const days = [
-      TrainingDay.PAZAR,
-      TrainingDay.PAZARTESI,
-      TrainingDay.SALI,
-      TrainingDay.CARSAMBA,
-      TrainingDay.PERSEMBE,
-      TrainingDay.CUMA,
-      TrainingDay.CUMARTESI
-    ];
-    setSelectedDay(days[dayIndex]);
-  }, []);
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Timer countdown engine
-  useEffect(() => {
-    if (timerActive && timerSeconds > 0) {
-      timerIntervalRef.current = setInterval(() => {
-        setTimerSeconds((prev) => {
-          if (prev <= 1) {
-            // Timer finished
-            setTimerActive(false);
-            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-            triggerVibrationAlert();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
-    }
-
-    return () => {
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
-  }, [timerActive, timerSeconds]);
-
-  const triggerVibrationAlert = () => {
+  const triggerVibrationAlert = useCallback(() => {
     if (Platform.OS !== 'web') {
       Vibration.vibrate([0, 500, 200, 500]);
     } else {
@@ -89,10 +54,29 @@ export default function WorkoutScreen() {
         alert(t.restFinishedAlert);
       }
     }
-  };
+  }, [t]);
+
+  // Timer countdown engine: one interval per run, not one per tick
+  useEffect(() => {
+    if (!timerActive) return;
+    timerIntervalRef.current = setInterval(() => {
+      setTimerSeconds((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => {
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    };
+  }, [timerActive]);
+
+  // Timer finished: stop and alert once (outside the state updater, so it can't fire twice)
+  useEffect(() => {
+    if (timerActive && timerSeconds === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- stopping the timer reacts to the countdown reaching zero
+      setTimerActive(false);
+      triggerVibrationAlert();
+    }
+  }, [timerActive, timerSeconds, triggerVibrationAlert]);
 
   const startTimer = (exercise: Exercise) => {
-    setActiveExerciseId(exercise.id);
     setTimerSeconds(exercise.restSeconds);
     setTimerMax(exercise.restSeconds);
     setTimerActive(true);
@@ -110,7 +94,6 @@ export default function WorkoutScreen() {
   const closeTimer = () => {
     setTimerActive(false);
     setTimerSeconds(0);
-    setActiveExerciseId(null);
   };
 
   // Get active workout
@@ -296,7 +279,7 @@ export default function WorkoutScreen() {
           <View style={styles.timerDockMain}>
             {/* Active digital count */}
             <Text style={[styles.digitalCountdown, { color: timerSeconds < 10 ? '#FF3B30' : '#007AFF' }]}>
-              00:{timerSeconds.toString().padStart(2, '0')}
+              {formatSeconds(timerSeconds)}
             </Text>
 
             {/* Play, Pause & Reset */}

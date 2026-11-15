@@ -1,5 +1,7 @@
 # Atletik Güç & Beslenme / Athletic Power & Nutrition
 
+[![CI](https://github.com/lprvy/fitness-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/lprvy/fitness-tracker/actions/workflows/ci.yml)
+
 12 haftalık antrenman programını, günlük beslenme makrolarını, market bütçesini ve mutfak stoğunu tek yerden takip eden bir Expo (React Native) mobil uygulaması.
 An Expo (React Native) app for tracking a 12-week training program, daily nutrition macros, grocery budget and pantry stock in one place.
 
@@ -104,6 +106,14 @@ When the build finishes, EAS gives you a download link. To build with your own E
 
 ---
 
+## Geliştirme / Development
+```bash
+npm run lint       # ESLint
+npm run typecheck  # TypeScript
+npm test           # Jest: program, kalori hedefi, bütçe ve stok mantığı / program, calorie target, budget & stock logic
+```
+Her push'ta GitHub Actions bu üç adımı çalıştırır. / GitHub Actions runs all three on every push.
+
 ## Proje Yapısı / Project Structure
 ```
 src/
@@ -112,7 +122,9 @@ src/
 ├── constants/      Program, menü ve market verileri / Program, menu & grocery data
 ├── i18n/           Çeviriler / Translations (tr, en)
 ├── store/          Uygulama durumu / App state (zustand)
-└── types/          TypeScript tipleri / Types
+├── types/          TypeScript tipleri / Types
+└── utils/          Yardımcı fonksiyonlar / Helpers
+tests/              Jest testleri / Jest tests
 ```
 
 ## Lisans / License

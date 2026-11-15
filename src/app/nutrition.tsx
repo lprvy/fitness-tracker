@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '../store/appStore';
 import { MENU_TEMPLATES } from '../constants/mockData';
 import { Meal, Ingredient } from '../types';
 import { Spacing } from '../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
 import { ProgressBar } from '../components/ProgressBar';
 import { useLanguage } from '../i18n/LanguageContext';
 

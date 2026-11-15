@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Pressable, TextInput, Platform, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable, TextInput, Platform, Alert, useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '../store/appStore';
 import { Spacing } from '../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const BUDGET_WARNING_THRESHOLD_TL = 300;
