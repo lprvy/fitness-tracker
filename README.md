@@ -114,3 +114,7 @@ src/
 ├── store/          Uygulama durumu / App state (zustand)
 └── types/          TypeScript tipleri / Types
 ```
+
+## Lisans / License
+
+MIT
