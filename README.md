@@ -7,6 +7,17 @@ An Expo (React Native) app for tracking a 12-week training program, daily nutrit
 
 **Diller / Languages:** Türkçe, English (sağ üstteki `EN` / `TR` butonu · the `EN` / `TR` button at the top right)
 
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/summary.png" width="190" alt="Özet ekranı: hafta seçimi ve stok uyarısı / Summary screen: week picker and low-stock warning"><br><sub>Özet / Summary</sub></td>
+    <td align="center"><img src="docs/screenshots/workout.png" width="190" alt="Antrenman ekranı: salı kuvvet günü, setler, ağırlıklar ve dinlenme süreleri / Workout screen: Tuesday strength day with sets, weights and rest times"><br><sub>Antrenman / Workout</sub></td>
+    <td align="center"><img src="docs/screenshots/nutrition.png" width="190" alt="Beslenme ekranı: günlük kalori ve protein hedefi, menü şablonu ve öğün listesi / Nutrition screen: daily calorie and protein targets, menu template and meal checklist"><br><sub>Beslenme / Nutrition</sub></td>
+    <td align="center"><img src="docs/screenshots/grocery.png" width="190" alt="Market ekranı: haftalık bütçe ve alışveriş listesi / Grocery screen: weekly budget and shopping list"><br><sub>Market / Grocery</sub></td>
+  </tr>
+</table>
+
+<sub>Web sürümünden alınmış ekran görüntüleri (`npx expo export --platform web`). / Screenshots from the web build.</sub>
+
 - [Türkçe Kurulum](#türkçe-kurulum)
 - [English Setup](#english-setup)
 
