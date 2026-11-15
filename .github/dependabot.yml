@@ -1,0 +1,10 @@
+# Monthly, grouped update PRs. Only GitHub Actions: Expo packages are upgraded together with `npx expo install --fix`.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns: ["*"]
