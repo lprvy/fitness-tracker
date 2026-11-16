@@ -121,7 +121,7 @@ When the build finishes, EAS gives you a download link. To build with your own E
 ```bash
 npm run lint       # ESLint
 npm run typecheck  # TypeScript
-npm test           # Jest: program, kalori hedefi, bütçe ve stok mantığı / program, calorie target, budget & stock logic
+npm test           # Jest: program, kalori hedefi, bütçe, stok ve çeviriler / program, calorie target, budget, stock & translations
 ```
 Her push'ta GitHub Actions bu üç adımı çalıştırır. / GitHub Actions runs all three on every push.
 
